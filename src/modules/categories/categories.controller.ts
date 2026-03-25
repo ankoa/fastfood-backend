@@ -7,17 +7,21 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
 import { CategoriesService } from './categories.service';
+import { Resource } from 'src/common/decorators/resource.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly service: CategoriesService) {}
 
+  @Resource('category')
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query() query: PaginationDto) {
+    return this.service.findAll(query);
   }
 
   @Get(':id')

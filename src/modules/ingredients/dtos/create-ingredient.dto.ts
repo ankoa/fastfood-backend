@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNumber,
@@ -20,6 +21,7 @@ export class CreateIngredientDto {
   description?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   price?: number;
 
@@ -28,6 +30,7 @@ export class CreateIngredientDto {
   isRequired?: boolean;
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   categoryId!: number;
 }

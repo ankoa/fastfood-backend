@@ -6,7 +6,10 @@ import {
   IsNotEmpty,
   IsEnum,
 } from 'class-validator';
-import { ProductVariantSize, ProductVariantType } from '../../../entities/enums';
+import {
+  ProductVariantSize,
+  ProductVariantType,
+} from '../../../entities/enums';
 
 export class CreateProductVariantDto {
   @IsNotEmpty()

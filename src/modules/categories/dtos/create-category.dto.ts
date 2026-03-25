@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsString, IsNumber, IsOptional, IsNotEmpty } from 'class-validator';
 
 export class CreateCategoryDto {
@@ -14,6 +15,7 @@ export class CreateCategoryDto {
   description?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   sortOrder?: number;
 }

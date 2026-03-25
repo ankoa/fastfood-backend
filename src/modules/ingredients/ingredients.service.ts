@@ -26,8 +26,9 @@ export class IngredientsService {
   }
 
   async update(id: number, data: UpdateIngredientDto) {
-    const entity = await this.repo.preload({ id, ...data });
+    const entity = await this.repo.findOneBy({ id });
     if (!entity) throw new NotFoundException('Ingredient not found');
+    Object.assign(entity, data);
     return this.repo.save(entity);
   }
 

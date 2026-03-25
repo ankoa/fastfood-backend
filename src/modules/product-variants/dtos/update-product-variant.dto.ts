@@ -5,7 +5,10 @@ import {
   IsBoolean,
   IsEnum,
 } from 'class-validator';
-import { ProductVariantSize, ProductVariantType } from '../../../entities/enums';
+import {
+  ProductVariantSize,
+  ProductVariantType,
+} from '../../../entities/enums';
 
 export class UpdateProductVariantDto {
   @IsOptional()

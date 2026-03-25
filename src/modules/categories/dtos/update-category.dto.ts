@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsString, IsNumber, IsOptional, IsBoolean } from 'class-validator';
 
 export class UpdateCategoryDto {
@@ -14,6 +15,7 @@ export class UpdateCategoryDto {
   description?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   sortOrder?: number;
 

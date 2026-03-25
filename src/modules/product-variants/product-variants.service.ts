@@ -26,8 +26,9 @@ export class ProductVariantsService {
   }
 
   async update(id: number, data: UpdateProductVariantDto) {
-    const entity = await this.repo.preload({ id, ...data });
+    const entity = await this.repo.findOneBy({ id });
     if (!entity) throw new NotFoundException('ProductVariant not found');
+    Object.assign(entity, data);
     return this.repo.save(entity);
   }
 

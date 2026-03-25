@@ -26,8 +26,9 @@ export class AddressesService {
   }
 
   async update(id: number, data: UpdateAddressDto) {
-    const entity = await this.repo.preload({ id, ...data });
+    const entity = await this.repo.findOneBy({ id });
     if (!entity) throw new NotFoundException('Address not found');
+    Object.assign(entity, data);
     return this.repo.save(entity);
   }
 

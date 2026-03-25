@@ -26,8 +26,9 @@ export class UsersService {
   }
 
   async update(id: number, data: UpdateUserDto) {
-    const entity = await this.usersRepo.preload({ id, ...data });
+    const entity = await this.usersRepo.findOneBy({ id });
     if (!entity) throw new NotFoundException('User not found');
+    Object.assign(entity, data);
     return this.usersRepo.save(entity);
   }
 

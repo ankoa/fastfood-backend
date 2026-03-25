@@ -26,8 +26,9 @@ export class ProductsService {
   }
 
   async update(id: number, data: UpdateProductDto) {
-    const entity = await this.repo.preload({ id, ...data });
+    const entity = await this.repo.findOneBy({ id });
     if (!entity) throw new NotFoundException('Product not found');
+    Object.assign(entity, data);
     return this.repo.save(entity);
   }
 

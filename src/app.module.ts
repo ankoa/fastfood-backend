@@ -6,8 +6,13 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import dbConfig from './configurations/database.config';
 import { UsersModule } from '@modules/users/users.module';
-
 import { CategoriesModule } from '@modules/categories/categories.module';
+import { AddressesModule } from '@modules/addresses/addresses.module';
+import { IngredientsModule } from '@modules/ingredients/ingredients.module';
+import { ProductsModule } from '@modules/products/products.module';
+import { ProductVariantsModule } from '@modules/product-variants/product-variants.module';
+import { ProductIngredientsModule } from '@modules/product-ingredients/product-ingredients.module';
+
 /* import { AddressesModule } from '@modules/addresses/addresses.module';
 import { IngredientsModule } from '@modules/ingredients/ingredients.module';
 import { ProductsModule } from '@modules/products/products.module';
@@ -38,11 +43,11 @@ import { ProductIngredientsModule } from '@modules/product-ingredients/product-i
 
     UsersModule,
     CategoriesModule,
-    /* AddressesModule,
+    AddressesModule,
     IngredientsModule,
     ProductsModule,
     ProductVariantsModule,
-    ProductIngredientsModule, */
+    ProductIngredientsModule,
   ],
 
   controllers: [],
