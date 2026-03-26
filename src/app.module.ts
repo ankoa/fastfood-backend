@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -12,6 +17,7 @@ import { IngredientsModule } from '@modules/ingredients/ingredients.module';
 import { ProductsModule } from '@modules/products/products.module';
 import { ProductVariantsModule } from '@modules/product-variants/product-variants.module';
 import { ProductIngredientsModule } from '@modules/product-ingredients/product-ingredients.module';
+import { StartTimingMiddleware } from './common/middleware/start-timing.middleware';
 
 /* import { AddressesModule } from '@modules/addresses/addresses.module';
 import { IngredientsModule } from '@modules/ingredients/ingredients.module';
@@ -53,4 +59,10 @@ import { ProductIngredientsModule } from '@modules/product-ingredients/product-i
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(StartTimingMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

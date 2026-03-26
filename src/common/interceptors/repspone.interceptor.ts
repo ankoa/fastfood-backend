@@ -3,13 +3,10 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  HttpException,
 } from '@nestjs/common';
-
-import { Observable, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
-
-import { ApiResponse, PaginationMeta } from '../interface/index';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ApiResponse, PaginationMeta } from '../interface';
 import { Request, Response } from 'express';
 import { Reflector } from '@nestjs/core';
 import { RESOURCE_KEY } from '../decorators/resource.decorator';
@@ -64,48 +61,14 @@ export class TransformInterceptor<T> implements NestInterceptor<
       message: partial.message ?? 'Thành công',
       data: partial.data ?? null,
       meta: partial.meta,
-      errors: partial.errors,
+      /*  errors: partial.errors, */
       path: request.url,
-      timestamp: new Date().toISOString(),
+      date: new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour12: false,
+      }),
+      takenTime: `${Date.now() - request['startTime']}ms`,
     };
-  }
-
-  private extractError(err: unknown): {
-    message?: string;
-    errors?: string[];
-  } {
-    if (err instanceof HttpException) {
-      const res: unknown = err.getResponse();
-
-      if (typeof res === 'string') {
-        return { message: res };
-      }
-
-      if (typeof res === 'object' && res !== null) {
-        const r = res as {
-          message?: string | string[];
-          error?: string;
-        };
-
-        if (Array.isArray(r.message)) {
-          return { errors: r.message };
-        }
-
-        if (typeof r.message === 'string') {
-          return { message: r.message };
-        }
-
-        if (r.error) {
-          return { message: r.error };
-        }
-      }
-    }
-
-    if (err instanceof Error) {
-      return { errors: [err.message] };
-    }
-
-    return {};
   }
 
   intercept(
@@ -125,11 +88,10 @@ export class TransformInterceptor<T> implements NestInterceptor<
     );
 
     return next.handle().pipe(
-      /* pipe xử lý respone controller trả về  */
       map((data: T | ApiResponse<T>): ApiResponse<T> => {
         const statusCode = response.statusCode ?? 200;
 
-        // Case 1
+        // Case 1: đã là ApiResponse
         if (isApiResponse<T>(data)) {
           return this.buildResponse<T>(
             {
@@ -141,12 +103,12 @@ export class TransformInterceptor<T> implements NestInterceptor<
           );
         }
 
-        // Case 2 (pagination or custom)
+        // Case 2: dạng có data + meta (pagination)
         if (typeof data === 'object' && data !== null && 'data' in data) {
           const d = data as {
             data?: T;
             message?: string;
-            meta?: unknown;
+            meta?: PaginationMeta;
           };
 
           return this.buildResponse<T>(
@@ -155,13 +117,13 @@ export class TransformInterceptor<T> implements NestInterceptor<
               statusCode,
               message: d.message ?? this.getMessage(method, resource, true),
               data: (d.data ?? null) as T,
-              meta: d.meta as PaginationMeta,
+              meta: d.meta,
             },
             request,
           );
         }
 
-        // Case 3
+        // Case 3: data thường
         return this.buildResponse<T>(
           {
             success: true,
@@ -170,29 +132,6 @@ export class TransformInterceptor<T> implements NestInterceptor<
             data: (data ?? null) as T,
           },
           request,
-        );
-      }),
-
-      catchError((err: unknown) => {
-        const statusCode = err instanceof HttpException ? err.getStatus() : 500;
-
-        const { message, errors } = this.extractError(err);
-
-        return throwError(
-          () =>
-            new HttpException(
-              this.buildResponse<null>(
-                {
-                  success: false,
-                  statusCode,
-                  message: message ?? this.getMessage(method, resource, false),
-                  errors,
-                  data: null,
-                },
-                request,
-              ),
-              statusCode,
-            ),
         );
       }),
     );

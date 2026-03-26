@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../../entities/category.entity';
 import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
-import { ApiResponse } from 'src/common/interface';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { paginate } from 'src/common/utils/paginate.util';
 

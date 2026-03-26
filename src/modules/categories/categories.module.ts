@@ -11,4 +11,3 @@ import { CategoriesService } from './categories.service';
   exports: [TypeOrmModule],
 })
 export class CategoriesModule {}
-

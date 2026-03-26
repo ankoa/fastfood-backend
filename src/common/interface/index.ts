@@ -1,3 +1,5 @@
+import { QueryFailedError } from 'typeorm';
+
 export interface PaginationMeta {
   total: number;
   page: number;
@@ -11,8 +13,25 @@ export interface ApiResponse<T> {
   data?: T | null;
   meta?: PaginationMeta;
   message?: string;
-  date?: Date;
+  type?: string;
+  date?: Date | string;
   path?: string;
-  timestamp?: string;
   errors?: string[];
+  takenTime?: string;
+}
+
+export interface DbError extends QueryFailedError {
+  code?: string;
+  detail?: string;
+}
+
+export interface ErrorResponse {
+  success: false;
+  type: 'BUSINESS' | 'VALIDATION' | 'SYSTEM';
+  statusCode: number;
+  message: string | string[];
+  errors?: string[];
+  date: Date | string;
+  path: string;
+  takenTime?: string;
 }
