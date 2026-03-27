@@ -3,6 +3,7 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -27,6 +28,8 @@ export class TransformInterceptor<T> implements NestInterceptor<
   T,
   ApiResponse<T>
 > {
+  private readonly logger = new Logger(TransformInterceptor.name);
+
   constructor(private readonly reflector: Reflector) {}
 
   private getMessage(
@@ -59,9 +62,10 @@ export class TransformInterceptor<T> implements NestInterceptor<
       success: partial.success ?? true,
       statusCode: partial.statusCode ?? 200,
       message: partial.message ?? 'Thành công',
-      data: partial.data ?? null,
-      meta: partial.meta,
-      /*  errors: partial.errors, */
+
+      ...(partial.data !== undefined && { data: partial.data }),
+      ...(partial.meta && { meta: partial.meta }),
+
       path: request.url,
       date: new Date().toLocaleString('vi-VN', {
         timeZone: 'Asia/Ho_Chi_Minh',
@@ -90,7 +94,7 @@ export class TransformInterceptor<T> implements NestInterceptor<
     return next.handle().pipe(
       map((data: T | ApiResponse<T>): ApiResponse<T> => {
         const statusCode = response.statusCode ?? 200;
-
+        /*  console.log('Response data:', data); */
         // Case 1: đã là ApiResponse
         if (isApiResponse<T>(data)) {
           return this.buildResponse<T>(
@@ -122,7 +126,22 @@ export class TransformInterceptor<T> implements NestInterceptor<
             request,
           );
         }
-
+        if (
+          typeof data === 'object' &&
+          data !== null &&
+          'message' in data &&
+          !('data' in data)
+        ) {
+          return this.buildResponse<T>(
+            {
+              success: true,
+              statusCode,
+              message: data.message as string,
+              /* data: null as T, */
+            },
+            request,
+          );
+        }
         // Case 3: data thường
         return this.buildResponse<T>(
           {

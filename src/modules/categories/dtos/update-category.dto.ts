@@ -1,8 +1,10 @@
-import { Type } from 'class-transformer';
-import { IsString, IsNumber, IsOptional, IsBoolean } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+/* import { Type } from 'class-transformer';
+import { IsString, IsNumber, IsOptional, IsBoolean } from 'class-validator'; */
+import { CreateCategoryDto } from './create-category.dto';
 
-export class UpdateCategoryDto {
-  @IsOptional()
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
+  /*  @IsOptional()
   @IsString()
   name?: string;
 
@@ -21,5 +23,5 @@ export class UpdateCategoryDto {
 
   @IsOptional()
   @IsBoolean()
-  isActive?: boolean;
+  isActive?: boolean; */
 }

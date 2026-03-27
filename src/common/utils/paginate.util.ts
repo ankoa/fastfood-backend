@@ -12,7 +12,7 @@ export async function paginate<T extends ObjectLiteral>(
     .skip((page - 1) * safeLimit)
     .take(safeLimit)
     .getManyAndCount();
-
+  console.log('Paginate query builder SQL:', data);
   return {
     data,
     meta: {
